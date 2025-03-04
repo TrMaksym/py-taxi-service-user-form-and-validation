@@ -11,12 +11,30 @@
       Update
     </a>
   </h1>
-  <p>Manufacturer: ({{ car.manufacturer.name }}, {{ car.manufacturer.country }})</p>
-  <h1>Drivers</h1>
+  <p><strong>Manufacturer:</strong> {{ car.manufacturer.name }} ({{ car.manufacturer.country }})</p>
+
+  <h2>Drivers</h2>
   <hr>
-  <ul>
-    {% for driver in car.drivers.all %}
-      <li>{{ driver.username }} ({{ driver.first_name }} {{ driver.last_name }})</li>
-    {% endfor %}
-  </ul>
+  {% if car.drivers.all.exists %}
+    <ul>
+      {% for driver in car.drivers.all %}
+        <li>{{ driver.username }} ({{ driver.first_name }} {{ driver.last_name }})</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No drivers assigned to this car.</p>
+  {% endif %}
+
+  {% if request.user not in car.drivers.all %}
+    <form method="post" action="{% url 'taxi:assign-driver-to-car' pk=car.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Assign me to this car</button>
+    </form>
+  {% else %}
+    <form method="post" action="{% url 'taxi:remove-driver-from-car' pk=car.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Remove me from this car</button>
+    </form>
+  {% endif %}
+
 {% endblock %}
