@@ -1,41 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Model: {{ car.model }}</h1>
-  <p><strong>Manufacturer:</strong> {{ manufacturer.name }} ({{ manufacturer.country }})</p>
+  <h1>
+    Username: {{ driver.username }}
+  </h1>
 
-  <h3>Drivers</h3>
-  {% if drivers %}
-    <ul class="list-group">
-      {% for driver in drivers %}
-        <li class="list-group-item">
-          <strong>Username:</strong> {{ driver.username }}<br>
-          <strong>Full name:</strong> {{ driver.first_name }} {{ driver.last_name }}<br>
-          <strong>License number:</strong> {{ driver.license_number }}<br>
+  <p><strong>First name:</strong> {{ driver.first_name }}</p>
+  <p><strong>Last name:</strong> {{ driver.last_name }}</p>
+  <p>
+    <strong>License number:</strong> {{ driver.license_number }}
+  </p>
+  <p><strong>Is staff:</strong> {{ driver.is_staff }}</p>
 
-          {% if driver == request.user %}
-            <div class="mt-2">
-              <a href="{% url 'taxi:driver-update' pk=driver.pk %}" class="btn btn-secondary btn-sm">Update</a>
-              <a href="{% url 'taxi:driver-delete' pk=driver.pk %}" class="btn btn-danger btn-sm">Delete</a>
-            </div>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No drivers assigned to this car.</p>
-  {% endif %}
+  <div class="ml-3">
+    <h4>Cars</h4>
 
-  {% if request.user not in drivers %}
-    <form method="post" action="{% url 'taxi:assign-driver-to-car' pk=driver.pk %}">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-primary">Assign me to this car</button>
-    </form>
-  {% else %}
-    <form method="post" action="{% url 'taxi:remove-driver-from-car' pk=driver.pk %}">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger">Remove me from this car</button>
-    </form>
-  {% endif %}
+    {% for car in driver.cars.all %}
+        <hr>
+        <p><strong>Model:</strong> {{ car.model }}</p>
+        <p><strong>Manufacturer:</strong> {{ car.manufacturer.name }}</p>
+        <p class="text-muted"><strong>Id:</strong> {{car.id}}</p>
 
+    {% empty %}
+      <p>No cars!</p>
+    {% endfor %}
+  </div>
+  <div>
+    <a href="{% url 'taxi:driver-update' pk=driver.id%}" class="btn btn-primary">
+      Update license
+    </a>
+    <a href="{% url 'taxi:driver-delete' pk=driver.id%}" class="btn btn-danger">
+      Delete driver
+    </a>
+  </div>
 {% endblock %}
